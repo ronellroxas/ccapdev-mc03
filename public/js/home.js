@@ -17,6 +17,23 @@ $(document).ready(function () {
     */
     $('#number').keyup(function () {
         // your code here
+        var user = {
+            name: $('#name').val(),
+            number: $('#number').val()
+        }
+
+        $.get('getCheckNumber', user, function(data, status) {
+            if(data == 'null') {
+                $('#number').css('background-color', '#E3E3E3');
+                $('#error').text('');
+                $('#submit').attr('disabled', false);
+            }
+            else {
+                $('#number').css('background-color', 'red');
+                $('#error').text('Number already registered');
+                $('#submit').attr('disabled', true);
+            }
+        });
     });
 
     /*
@@ -32,6 +49,25 @@ $(document).ready(function () {
     */
     $('#submit').click(function () {
         // your code here
+        var user = {
+            name: $('#name').val(),
+            number: $('#number').val()
+        }
+
+        if(user.name != '' && user.number != '')
+        {
+            $('#error').text('');
+            $.get('add', user, function(data, status) {
+                if(data != null) {
+                    $('#contacts').append(data);
+                    $('#name').val('');
+                    $('#number').val('')
+                }
+            });
+        }
+        else {
+            $('#error').text('Fill up missing fields!');
+        }
     });
 
     /*
@@ -43,6 +79,12 @@ $(document).ready(function () {
     */
     $('#contacts').on('click', '.remove', function () {
         // your code here
+        var id = {number: $(this).prev().children()[1].innerHTML};
+
+        var container = $(this).parent();
+        $.get('delete', id, function(data, status) {
+            if(data) container.remove();
+        });
     });
 
 })

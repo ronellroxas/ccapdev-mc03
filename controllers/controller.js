@@ -13,8 +13,11 @@ const controller = {
             current stored in the database.
     */
     getIndex: function(req, res) {
-        // your code here
-        res.render('home'); // This is to load the page initially
+        db.findMany(User, {}, '', function(dbres) {
+            res.render('home', {
+                users: dbres
+            }); // This is to load the page initially
+        });
     },
 
     /*
@@ -26,6 +29,10 @@ const controller = {
     */
     getCheckNumber: function(req, res) {
         // your code here
+        db.findOne(User, {number: req.query.number}, '', function(dbres) {
+            if(dbres == null) res.send('null');
+            else res.send(dbres);
+        });
     },
 
     /*
@@ -36,6 +43,22 @@ const controller = {
     */
     getAdd: function(req, res) {
         // your code here
+        var user = {
+            name: req.query.name,
+            number: req.query.number
+        }
+
+        db.insertOne(User, user, function(dbres) {
+            if(dbres) {
+                res.render('partials/card', {
+                    name: user.name,
+                    number: user.number
+                }, function(err, html) {
+                    res.send(html);
+                });
+            }
+            else res.send(null);
+        });
     },
 
     /*
@@ -46,6 +69,9 @@ const controller = {
     */
     getDelete: function (req, res) {
         // your code here
+        db.deleteOne(User, {number: req.query.number}, function(dbres) {
+            res.send(dbres);
+        });
     }
 
 }
